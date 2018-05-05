@@ -2,7 +2,7 @@ const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext("2d");
 const LSystem = require('lindenmayer');
 const $ = require('jquery');
-const reset = document.getElementById("button");
+// const reset = document.getElementById("button");
 // const save = document.getElementById("save");
 // const blank = document.getElementById("blank");
 // const getTrainArray = document.getElementById("train");
@@ -211,7 +211,6 @@ const setDrawLogic = ()=>{
     for(let i = 0;i<2;i++){
         if (drawInitNum=== 1){
             ctx.beginPath();
-            // ctx.moveTo(0,0);
             ctx.moveTo(moveX,moveY);
             ctx.lineTo(0, dividend/(koch.iterations + 1));
             ctx.stroke();
@@ -266,8 +265,9 @@ const launch = ()=>{
 }
 
 launch();
+
+
 // L-SYSTEM 
-// translate to center of canvas
 ctx.translate(canvas.width / 2, canvas.height / 4)
 
 
@@ -294,8 +294,6 @@ const doIt = ()=>{
     doIt();
     koch.iterate(5)
     koch.final()
-  console.log(koch.getString())
-    
 // }
 
 
@@ -358,9 +356,7 @@ let defineInputObjectBlank = ()=>{
 
 
 
-
-reset.addEventListener("click", ()=>{
-    console.log("ok1",koch.getString())
+const bringIt=()=>{
     canvas.height = 1000;
     canvas.width = 1000;
     ctx.translate(canvas.width / 2, canvas.height / 4)
@@ -369,8 +365,31 @@ reset.addEventListener("click", ()=>{
     doIt();
     koch.iterate(5);    
     koch.final();
-})
+}
 
+// reset.addEventListener("click", ()=>{
+  
+// })
+
+let num;
+let counter = 0;
+
+
+
+const scene = (counter)=>{
+    animate()
+    if (counter === 255){
+        return bringIt();
+    } else bringIt();
+};
+
+const animate = ()=>{ 
+    setTimeout(()=>{
+        counter += 1;
+        scene(counter);
+    },1000)
+};
+animate();
 // save.addEventListener("click", ()=>{
 //     defineInputObjectLiked();  
 // })

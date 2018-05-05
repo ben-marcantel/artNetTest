@@ -384,31 +384,31 @@ reset.addEventListener("click", ()=>{
 // })
 
 /////AJAX STUFF
-const getData =()=>{
-    return new Promise((resolve, reject)=>{
-        $.ajax({
-            url:"./trainingData.json"
-        }).done(data=>{
-            console.log(data);
-            resolve(data)
-        }).fail((error)=>{
-            reject(error);
-        });
-    }); 
-};
+// const getData =()=>{
+//     return new Promise((resolve, reject)=>{
+//         $.ajax({
+//             url:"./trainingData.json"
+//         }).done(data=>{
+//             console.log(data);
+//             resolve(data)
+//         }).fail((error)=>{
+//             reject(error);
+//         });
+//     }); 
+// };
 
-const sendData =()=>{
-    return new Promise((resolve, reject) => { 
-        $.ajax({
-            url:`https://artnet-bbc84.firebaseio.com/`,
-            method: "POST",
-            data: trainObject
-        }).done(data => {
-            console.log(data);
-            resolve(data);
-            });
-    });
-}
+// const sendData =()=>{
+//     return new Promise((resolve, reject) => { 
+//         $.ajax({
+//             url:`https://artnet-bbc84.firebaseio.com/`,
+//             method: "POST",
+//             data: trainObject
+//         }).done(data => {
+//             console.log(data);
+//             resolve(data);
+//             });
+//     });
+// }
 
 
 

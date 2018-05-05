@@ -3,87 +3,140 @@ const ctx = canvas.getContext("2d");
 const LSystem = require('lindenmayer');
 const $ = require('jquery');
 const reset = document.getElementById("button");
-const save = document.getElementById("save");
-const blank = document.getElementById("blank");
-const getTrainArray = document.getElementById("train");
-
+// const save = document.getElementById("save");
+// const blank = document.getElementById("blank");
+// const getTrainArray = document.getElementById("train");
+// const inputColor = document.getElementById("inputColor");
+let koch;
  
 //AXIOM RANDOMIZATION
 let charNum;
 let axiomLength;
 let axiomString ='';
 let productionString ='';
+let production2String ='';
 let initNum;
-let initNum2;
-
+let leftInitNum;
+let rightInitNum;
+let axiomInitNum;
+let prodInitNum1;
+let prodInitNum2;
+let moveX;
+let moveY;
+let dividend;
+let drawInitNum;
+let saveInitNum;
+let restoreInitNum;
+let rgb;
+let result;
 
 //VALUES FOR NEURAL NET
-let axiomDefinerLengthKey; 
-let productionDefinerLengthKey;
-let axiomArray = [];
-let productionArray = [];
+let axiomValue;
+let production1Value;
+let production2Value;
+let leftValue;
+let rightValue;
+let forwardValue;
+let iterationValue;
+let dividendValue;
+let moveXValue;
+let moveYValue;
+let drawLogicValue;
+let setSaveLogicValue;
+let setRestoreLogicValue;
+let rColorValue;
+let gColorValue;
+let bColorValue;
+let trainObject;
 let inputObject;
 let outputObject;
-let trainObject;
-let trainingArray =[];
-let angleMaker;
-let angleMaker2;
-
-
-///HELPER FUNCTIONS
-
-
-
-
-
-
-
-
-
-
 
 ////INITIALIZE VALUES
-const randomAngleNum =()=>{
-    initNum= Math.floor((Math.random()*180)+1);   
-
+const leftAngleInit =()=>{
+    leftInitNum= Math.floor((Math.random()*180)+1); 
+    leftValue = leftInitNum/180;
+    // console.log("leftValue", leftValue)
 } 
 
-const randomAngleNum2 =()=>{
-    initNum2= Math.floor((Math.random()*180)+1);   
+const rightAngleInit =()=>{
+    rightInitNum= Math.floor(((Math.random()*180)+1));   
+    rightValue = rightInitNum/180;
+    // console.log("rightValue", rightValue); 
 } 
 
-
-const axiomDefiner = ()=>{
-    axiomLength = Math.floor(Math.random()*4)+1
-    axiomDefinerLengthKey = axiomLength/4
+const axiomInit = ()=>{
+    axiomInitNum = Math.floor(Math.random()*2)+1
+    axiomValue = axiomInitNum/2;
+    // console.log("axiomValue", axiomValue);
 }
 
-const productionDefiner = ()=>{
-    axiomLength = Math.floor(Math.random()*10)+1
-    // productionDefinerLengthKey = axiomLength/10
+const production1Init = ()=>{
+    prodInitNum1 =  Math.floor(Math.random()*7)+1
+    production1Value = prodInitNum1/7;
+    // console.log("prod1", production1Value,prodInitNum1);  
  }
 
+const production2Init = ()=>{
+    prodInitNum2 =  Math.floor(Math.random()*6)+1
+    production2Value = prodInitNum2/6;
+    // console.log("prod2", production2Value);  
+ }
 
+const dividendInit = ()=>{
+    dividend = Math.floor(Math.random()*60)+10;
+    dividendValue = dividend/60;
+    // console.log("dividend", dividend, dividendValue);  
+    
+}
+
+const moveXInit = ()=>{
+    moveX = Math.floor(Math.random()*10);
+    moveXValue = moveX/10;
+    // console.log("moveX", moveXValue);  
+    
+}
+
+const moveYInit = ()=>{
+    moveY = Math.floor(Math.random()*10);
+    moveYValue = moveY/10;
+    // console.log("moveY", moveYValue);  
+    
+}
+
+const drawLogicInit = ()=>{
+    drawInitNum =  Math.floor(Math.random()*2)+1;
+    drawLogicValue = drawInitNum/2; 
+    // console.log("drawLogic", drawLogicValue);  
+    
+}
+
+const saveLogicInit = ()=>{
+    saveInitNum =  Math.floor(Math.random()*3)+1
+    setSaveLogicValue = saveInitNum/3;
+    // console.log("saveLogic", setSaveLogicValue);  
+    
+}
+
+const restoreLogicInit=()=>{
+    restoreInitNum =  Math.floor(Math.random()*2)+1
+    setRestoreLogicValue = restoreInitNum/2;
+    // console.log("restoreLogic", setRestoreLogicValue);         
+}
 
 ///CONDITIONAL SETS
 const setConditional = ()=>{
-    ctx.rotate((Math.PI/60) * initNum) 
-    // angleMaker = initNum/60;
+    ctx.rotate((Math.PI/180) * rightInitNum)   
 }
 
 const setConditional2 = ()=>{ 
-    ctx.rotate((Math.PI/60) * -initNum2) 
-    // angleMaker2 = initNum2/60;
+    ctx.rotate(-((Math.PI/180) * leftInitNum)); 
 }
 
-const axiomMaker = ()=>{
-    axiomDefiner()
+const axiomMaker = ()=>{    
     for(let i = 0;i<2;i++){
-        charNum =  Math.floor(Math.random()*2)+1
-        // axiomArray.push(charNum/4)
-        if (charNum === 1){
+        if (axiomInitNum === 1){
             axiomString = 'X';
-        } else if(charNum === 2)   {
+        } else if(axiomInitNum === 2)   {
             axiomString = 'F';
         } 
     }
@@ -91,173 +144,206 @@ const axiomMaker = ()=>{
 }
 
 const setProduction1 = ()=>{
-    productionDefiner()
-    for(let i = 0;i<5;i++){
-        charNum =  Math.floor(Math.random()*5)+1
-        // setProductionvalue = charNum/5
-        if (charNum === 1){
-            productionString = 'F';
-        } else if(charNum === 2)   {
+    for(let i = 0;i<7;i++){
+        if (prodInitNum1 === 1){
+            productionString = 'F+-F';
+        } else if(prodInitNum1 === 2)   {
             productionString = 'FF';
-        } else if(charNum === 3) {
+        } else if(prodInitNum1 === 3) {
             productionString ='FFF';
-        } else if(charNum === 4){
+        } else if(prodInitNum1 === 4){
             productionString ='FF-';
-        } else if(charNum === 5){
+        } else if(prodInitNum1 === 5){
             productionString ='FFF-';
-        } else if(charNum === 5){
+        } else if(prodInitNum1 === 6){
             productionString ='F-FF-';
-        } else if(charNum === 5){
+        } else if(prodInitNum1 === 7){
             productionString ='F-F++F-F';
         } 
     }    
     return productionString
 }
 
-
-const productionMaker2 = ()=>{
-    productionDefiner()
+const setProduction2 = ()=>{
     for(let i = 0;i<6;i++){
-        charNum =  Math.floor(Math.random()*6)+1
-        // productionMaker2Value = charNum/6
-        if (charNum === 1){
-            productionString = 'F-F++F-F'
-        } else if(charNum === 2)   {
-            productionString = 'X';
-        } else if(charNum === 3) {
-            productionString ='F---[-F[+FX]-X';
-        } else if(charNum === 4){
-            productionString ='F---[-[X]--X]-F[+FX]-X';  
-        } else if(charNum === 5){
-            productionString ='F---[-[X]-F[+FX]-X';
-        } else if(charNum === 6){
-            productionString ='F--[-[X]----X]-F[+FX]-X';
+        if (prodInitNum2 === 1){
+            production2String = 'F-F++F-F'
+        } else if(prodInitNum2 === 2)   {
+            production2String = 'X';
+        } else if(prodInitNum2 === 3) {
+            production2String ='F---[-F[+FX]-X';
+        } else if(prodInitNum2 === 4){
+            production2String ='F---[-[X]--X]-F[+FX]-X';  
+        } else if(prodInitNum2 === 5){
+            production2String ='F---[-[X]-F[+FX]-X';
+        } else if(prodInitNum2 === 6){
+            production2String ='F--[-[X]----X]-F[+FX]-X';
         } 
     }    
-    return productionString
+    return production2String
 }
+
+const  getRgb = (hex)=> {
+    const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+    hex = hex.replace(shorthandRegex, function(m, r, g, b) {
+        return r + r + g + g + b + b;
+    });
+  
+    result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    console.log(result);
+        rColorValue = result[1];
+        gColorValue =result[2];
+        bColorValue = result[3];
+        console.log(rColorValue,gColorValue,bColorValue);
+    return result ? {
+        r: Math.round(parseInt(result[1], 16) / 2.55) / 100,
+        g: Math.round(parseInt(result[2], 16) / 2.55) / 100,
+        b: Math.round(parseInt(result[3], 16) / 2.55) / 100,
+        
+    } : null;
+}
+
+// inputColor.addEventListener("input", (event) => {
+//     rgb = getRgb(event.target.value);
+// });
+
 const setDrawLogic = ()=>{
-    let setNum= ()=>{
-    charNum =  Math.floor(Math.random()*2)+1
-        
-    }
-    charNum =  Math.floor(Math.random()*2)+1
-    // setDrawValue = charNum
-        let dividend = Math.floor(Math.random()*60)+10
-        let moveXValue = Math.floor(Math.random()*10)
-        let moveYValue = Math.floor(Math.random()*10)
-        
-
     for(let i = 0;i<2;i++){
-        if (charNum === 1){
-
+        if (drawInitNum=== 1){
             ctx.beginPath();
-            ctx.moveTo(0,0);
-            
-            // ctx.moveTo(moveXValue,moveYValue);
+            // ctx.moveTo(0,0);
+            ctx.moveTo(moveX,moveY);
             ctx.lineTo(0, dividend/(koch.iterations + 1));
             ctx.stroke();
-            ctx.strokeStyle= "blue";
-            ctx.translate(0, dividend/(koch.iterations + 1))
-        } else if(charNum === 2)   {
-            
+            ctx.strokeStyle= "orange";
+            ctx.translate(0, dividend/(koch.iterations + 1));
+        } else if(drawInitNum === 2)  {
             ctx.beginPath();
             ctx.moveTo(0,0);
             ctx.lineTo(0, dividend/(koch.iterations + 1));
             ctx.stroke();
-            ctx.strokeStyle= "blue";
+            ctx.strokeStyle= "yellow";
             ctx.translate(0, dividend/(koch.iterations + 1))
-       
         } 
     }
 }
-
 
 const setSaveLogic = ()=>{
     for(let i = 0;i<3;i++){
-        charNum =  Math.floor(Math.random()*3)+1
-        // setSaveLogicValue = charNum/3;
-        if (charNum === 1){
+        if (saveInitNum=== 1){
             ctx.save()  
-        } else if(charNum === 2){
+        } else if(saveInitNum=== 2){
             ctx.save()
-            ctx.strokeStyle= "light blue";   
-        } else if(charNum === 3){} 
+            ctx.strokeStyle= "aqua";   
+        } else if(saveInitNum === 3){} 
     }   
 };
 
 const setRestoreLogic = ()=>{
     for(let i = 0;i<2;i++){
-        charNum =  Math.floor(Math.random()*2)+1
-        // setSaveLogicValue = charNum/3;
-        if (charNum === 1){
+        if (restoreInitNum === 1){
             ctx.restore()
-        } else if(charNum === 2){
+        } else if(restoreInitNum === 2){
             ctx.restore()
-            ctx.strokeStyle= "dark blue";   
+            ctx.strokeStyle= "white";   
         } 
     }   
 };
 
+//////INITIALIZE VALUES   
+const launch = ()=>{
+    axiomInit() 
+    rightAngleInit()
+    leftAngleInit() 
+    dividendInit()
+    moveXInit()
+    moveYInit()
+    drawLogicInit()
+    saveLogicInit()
+    restoreLogicInit()
+    production1Init()
+    production2Init()
+}
+
+launch();
 // L-SYSTEM 
 // translate to center of canvas
 ctx.translate(canvas.width / 2, canvas.height / 4)
-const koch = new LSystem({
-    axiom: axiomMaker(),
 
-    productions: {'F': setProduction1(), 'X':productionMaker2() },
-    finals: {
-    '+': () => {setConditional()},
-    '-': () => {setConditional2()},
-    'F': () => {setDrawLogic()},
-    '[': () => {setSaveLogic()},
-    ']': () => {setRestoreLogic()}
-    }
 
-})
+const doIt = ()=>{
+    koch = new LSystem({
+        axiom: axiomMaker(),
+        productions: {'F': setProduction1(), 'X':setProduction2()},
+        finals: {
+        '+': () => {setConditional()},
+        '-': () => {setConditional2()},
+        'F': () => {setDrawLogic()},
+        '[': () => {setSaveLogic()},
+        ']': () => {setRestoreLogic()}
+        }
+    })
+}
+
 
 
 
 ////BUTTONS
 
 // let execute = ()=>{
-    randomAngleNum()
-    randomAngleNum2()
+    doIt();
     koch.iterate(5)
     koch.final()
+  console.log(koch.getString())
+    
 // }
 
-
-reset.addEventListener("click", ()=>{
-    canvas.height = 1000;
-    canvas.width = 1000;
-    // execute();
-})
-
-save.addEventListener("click", ()=>{
-    defineInputObjectLiked();  
-})
-
-blank.addEventListener("click",()=>{
-    defineInputObjectBlank();  
-})
-
-getTrainArray.addEventListener("click",()=>{
-    console.log(trainingArray);
-})
 
 ////////////////
 
 let defineInputObjectLiked = ()=>{
     inputObject = {
-     
+        axiomValue:axiomValue,
+        production1Value:production1Value,
+        production2Value:production2Value,
+        leftValue:leftValue,
+        rightValue:rightValue,
+        forwardValue:forwardValue,
+        iterationValue:iterationValue,
+        dividendValue:dividendValue,
+        moveXValue: moveXValue,
+        moveYValue:moveYValue,
+        drawLogicValue:drawLogicValue,
+        setSaveLogicValue:setSaveLogicValue,
+        setRestoreLogicValue:setRestoreLogicValue,
+        rColorValue:rColorValue,
+        gColorValue:gColorValue,
+        bColorValue:bColorValue
     }
     outputObject = {
         like:1
     }
 
     trainObject = {input:inputObject, output: outputObject};
-    trainingArray.push(trainObject);
+}
+
+let resetObject = ()=>{
+        axiomValue=null,
+        production1Value=null,
+        production2Value=null,
+        leftValue=null,
+        rightValue=null,
+        forwardValue=null,
+        iterationValue=null,
+        dividendValue=null,
+        moveXValue= null,
+        moveYValue=null,
+        drawLogicValue=null,
+        setSaveLogicValue=null,
+        setRestoreLogicValue=null,
+        rColorValue=null,
+        gColorValue=null,
+        bColorValue=null
 }
 
 let defineInputObjectBlank = ()=>{
@@ -268,8 +354,34 @@ let defineInputObjectBlank = ()=>{
         blank:1
     }
     trainObject = {input:inputObject, output: outputObject};
-    trainingArray.push(trainObject);
 }
+
+
+
+
+reset.addEventListener("click", ()=>{
+    console.log("ok1",koch.getString())
+    canvas.height = 1000;
+    canvas.width = 1000;
+    ctx.translate(canvas.width / 2, canvas.height / 4)
+    resetObject();    
+    launch(); 
+    doIt();
+    koch.iterate(5);    
+    koch.final();
+})
+
+// save.addEventListener("click", ()=>{
+//     defineInputObjectLiked();  
+// })
+
+// blank.addEventListener("click",()=>{
+//     defineInputObjectBlank();  
+// })
+
+// getTrainArray.addEventListener("click",()=>{
+//     console.log(trainingArray);
+// })
 
 /////AJAX STUFF
 const getData =()=>{
@@ -302,8 +414,6 @@ const sendData =()=>{
 
 
 
-getData();
-save.addEventListener("click", sendData);
 
 
 

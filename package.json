@@ -1,0 +1,26 @@
+{
+  "name": "artNetTest",
+  "version": "1.0.0",
+  "description": "testing for data set size needed to train machine learning app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ben-marcantel/artNetTest.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ben-marcantel/artNetTest/issues"
+  },
+  "homepage": "https://github.com/ben-marcantel/artNetTest#readme",
+  "dependencies": {
+    "brain.js": "^1.2.1",
+    "browserify": "^16.2.0",
+    "jquery": "^3.3.1",
+    "lindenmayer": "^1.3.6"
+  }
+}
